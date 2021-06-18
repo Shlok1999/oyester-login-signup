@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login Page</h1>
+
+    <form onsubmit="return doLogin(this);">
+
+        <div class="form-group">
+            <input type="email" required name="email" />
+            <label class="control-label">Email</label><i class="mtrl-select"></i>
+        </div>
+
+        <div class="form-group">
+            <input type="password" required name="password" />
+            <label class="control-label">Password</label><i class="mtrl-select"></i>
+        </div>
+
+        <a href="/signup">Don't have an account ?</a>
+        <div class="submit-btns">
+            <button class="mtr-btn login" name="submit" type="submit"><span>Login</span></button>
+        </div>
+    </form>
+
+    <script>
+		function doLogin(form) {
+			form.submit.setAttribute("disabled", "disabled");
+			form.submit.innerHTML = "<span>Loading...</span>";
+
+			var ajax = new XMLHttpRequest();
+			ajax.open("POST", "/login", true);
+
+			ajax.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					form.submit.removeAttribute("disabled");
+					form.submit.innerHTML = "<span>Login</span>";
+
+					var response = JSON.parse(this.responseText);
+
+					if (response.status == "success") {
+						var accessToken = response.accessToken;
+						localStorage.setItem("accessToken", accessToken);
+						window.location.href = "/home";
+						
+					} else {
+						alert(response.message);
+					}
+				}
+			};
+
+			ajax.send(new FormData(form));
+			return false;
+		}
+	</script>
+    
+</body>
+</html>
